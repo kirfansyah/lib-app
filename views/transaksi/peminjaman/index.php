@@ -80,39 +80,63 @@
                                 <div class="col-md-6 col-sm-12">
                                     <div class="form-group">
                                         <label>Nama</label>
-                                        <input name="nama_member" id="nama_member" type="text" class="form-control w-300" required autocomplete="off">
-                                        <input name="id_member" id="id_member" type="hidden" class="form-control w-300" required autocomplete="off">
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label>Email</label>
-                                        <input name="email" id="email" type="email" class="form-control w-300" required autocomplete="off">
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label>No Hp</label>
-                                        <input name="no_hp" id="no_hp" type="number" class="form-control w-300" required autocomplete="off">
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <div class="form-group">
-                                        <label>Alamat</label>
-                                        <input name="alamat" id="alamat" type="text" class="form-control w-300" required autocomplete="off">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="form-group">
-                                        <label>Active</label>
-                                        <select name="is_active" id="is_active" class="form-control w-300" required>
+                                        <select name="id_member" id="id_member" class="form-control w-300 select2" required>
                                             <option>-Choose-</option>
-                                            <option value="1">Aktif</option>
-                                            <option value="0">Non-aktif</option>
+                                        </select>
+                                        <input name="id_peminjaman" id="id_peminjaman" type="hidden" class="form-control w-300" required autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Judul Buku</label>
+                                        <select name="id_buku" id="id_buku" class="form-control w-300 select2" required>
+                                            <option>-Choose-</option>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Tanggal Pinjam </label>
+                                        <div class="input-groupicon">
+                                            <input name="tanggal_pinjam" id="tanggal_pinjam" type="text" placeholder="DD-MM-YYYY" class="datetimepicker tanggal">
+                                            <div class="addonset">
+                                                <img src="<?= $baseUrl ?>assets/img/icons/calendars.svg" alt="img">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label>Tanggal Pengembalian Seharusnya </label>
+                                        <div class="input-groupicon">
+                                            <input name="tanggal_pengembalian_seharusnya" id="tanggal_pengembalian_seharusnya" type="text" placeholder="DD-MM-YYYY" class="datetimepicker tanggal">
+                                            <div class="addonset">
+                                                <img src="<?= $baseUrl ?>assets/img/icons/calendars.svg" alt="img">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 hidden-item">
+                                    <div class="form-group">
+                                        <label>Tanggal Dikembalikan Actual </label>
+                                        <div class="input-groupicon">
+                                            <input name="tanggal_kembali" id="tanggal_kembali" type="text" placeholder="DD-MM-YYYY" class="datetimepicker tanggal">
+                                            <div class="addonset">
+                                                <img src="<?= $baseUrl ?>assets/img/icons/calendars.svg" alt="img">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 hidden-item">
+                                    <div class="form-group">
+                                        <label>Denda</label>
+                                        <input name="denda" id="denda" type="text" class="form-control w-300" required autocomplete="off" readonly>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div class="text-center mt-3">
@@ -132,6 +156,9 @@
 
         <script>
             $(document).ready(function() {
+                getMember()
+                getBuku()
+                // $('.hidden-item').hide()
 
 
                 if ($.fn.DataTable.isDataTable('#userTable')) {
@@ -145,16 +172,16 @@
                     "ajax": {
                         "url": "get-loans",
                         "type": "GET",
-                        // "dataSrc": function(json) {
-                        //     console.log("Response Data:", json); // Log ke browser console
-                        //     if (json.error) {
-                        //         console.error("Error:", json.error);
-                        //     }
-                        //     return json.data;
-                        // },
-                        // "error": function(xhr, status, error) {
-                        //     console.error("AJAX Error:", status, error);
-                        // }
+                        "dataSrc": function(json) {
+                            console.log("Response Data:", json); // Log ke browser console
+                            if (json.error) {
+                                console.error("Error:", json.error);
+                            }
+                            return json.data;
+                        },
+                        "error": function(xhr, status, error) {
+                            console.error("AJAX Error:", status, error);
+                        }
                     },
                 });
 
@@ -169,7 +196,7 @@
 
                 // Loop setiap input di dalam form
                 $('#user-data input, #user-data select').each(function() {
-                    if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_member') {
+                    if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_peminjaman' && $(this).attr('name') != 'tanggal_kembali' && $(this).attr('name') != 'denda') {
                         isValid = false;
                         $(this).addClass('is-invalid'); // Tambahkan efek merah jika kosong
                     } else {
@@ -193,11 +220,35 @@
                 var formData = $('#user-data').serialize()
                 var id = $('#id_member').val()
                 if (action == 'add') {
-                    addData(formData)
+                    Swal.fire({
+                        title: "Simpan Transaksi Ini ?",
+                        text: "Setelah ini, kamu ga bisa edit transaksi!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Simpan!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            addData(formData)
+                        }
+                    });
                 }
 
                 if (action == 'update') {
-                    updateData(formData)
+                    Swal.fire({
+                        title: "Update Transaksi Ini ?",
+                        text: "Setelah ini, kamu ga bisa edit transaksi!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Ya, Update!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            updateData(formData)
+                        }
+                    });
                 }
 
 
@@ -210,6 +261,14 @@
                 $('#user-data').trigger("reset");
                 $('.modal-title').text('Create')
                 $('.btn-submit').attr('action', 'add')
+
+                $('#id_member').prop('readonly', false)
+                $('#id_buku').prop('readonly', false)
+                $('#tanggal_pinjam').prop('readonly', false)
+                $('#tanggal_pinjam').prop('readonly', false)
+                $('#tanggal_pengembalian_seharusnya').prop('readonly', false)
+                $('#tanggal_kembali').prop('readonly', true)
+                $('#denda').prop('readonly', true)
             })
 
             $(document).on('click', '.edit-data', function(e) {
@@ -219,36 +278,44 @@
                 $('#user-data').trigger("reset");
                 $('.modal-title').text('Update')
                 $('.btn-submit').attr('action', 'update')
-                console.log('id :', id);
 
+                $('#id_member').prop('readonly', true)
+                $('#id_buku').prop('readonly', true)
+                $('#tanggal_pinjam').prop('readonly', true)
+                $('#tanggal_pengembalian_seharusnya').prop('readonly', true)
+                $('#tanggal_kembali').prop('readonly', false)
+                $('#denda').prop('readonly', true)
 
 
                 $.ajax({
-                    url: "get-member-by-id", // Pastikan path sudah benar
+                    url: "get-loan-by-id", // Pastikan path sudah benar
                     type: "POST",
                     data: {
-                        id_member: id
+                        id_peminjaman: id
                     },
                     dataType: "json",
                     success: function(response) {
-                        console.log(response);
+                        console.log('res: ', response);
 
 
-                        $('#id_member').val('')
-                        $('#nama_member').val('')
-                        $('#email').val('')
-                        $('#no_hp').val('')
-                        $('#alamat').val('')
-                        $('#is_active').val('').trigger('change')
+                        $('#id_member').val('').trigger('change')
+                        $('#id_peminjaman').val('')
+                        $('#id_buku').val('').trigger('change')
+                        $('#tanggal_pinjam').val('')
+                        $('#tanggal_pengembalian_seharusnya').val('')
+                        $('#tanggal_kembali').val('')
+                        $('#denda').val('')
 
                         if (response.status === "success") {
 
-                            $('#id_member').val(response.data.id_member)
-                            $('#nama_member').val(response.data.nama_member)
-                            $('#email').val(response.data.email)
-                            $('#no_hp').val(parseInt(response.data.no_hp))
-                            $('#alamat').val(response.data.alamat)
-                            $('#is_active').val(response.data.is_active).trigger('change');
+                            $('#id_member').val(response.data.id_member).trigger('change');
+                            $('#id_peminjaman').val(response.data.id_peminjaman)
+                            $('#id_buku').val(response.data.id_buku).trigger('change');
+                            var tanggal
+                            $('#tanggal_pinjam').val(response.data.tanggal_pinjam.split('-').reverse().join('-'))
+                            $('#tanggal_pengembalian_seharusnya').val(response.data.tanggal_pengembalian_seharusnya.split('-').reverse().join('-'))
+                            // $('#tanggal_kembali').val((response.data.tanggal_kembali.split('-').reverse().join('-')))
+                            // $('#denda').val(parseInt(response.data.denda))
 
                         } else {
                             alert(response.message);
@@ -321,12 +388,14 @@
 
             function addData(formData) {
                 $.ajax({
-                    url: "add-member", // Pastikan path sudah benar
+                    url: "add-loan", // Pastikan path sudah benar
                     type: "POST",
                     data: formData,
                     dataType: "json",
                     success: function(response) {
+
                         if (response.status === "success") {
+
                             $('#create').modal('hide'); // Tutup modal
                             $('#userTable').DataTable().ajax.reload(null, false); // Reload tanpa reset paging
 
@@ -349,7 +418,7 @@
 
             function updateData(formData) {
                 $.ajax({
-                    url: "update-member", // Pastikan path sudah benar
+                    url: "update-loan", // Pastikan path sudah benar
                     type: "POST",
                     data: formData,
                     dataType: "json",
@@ -373,6 +442,95 @@
                     }
                 });
 
+            }
+
+
+            function getMember() {
+                $.ajax({
+                    url: "get-members", // Pastikan path sudah benar
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+
+                        if (response.status === "success") {
+                            let opt = `<option>-Choose-</option>`
+                            $.each(response.data, function(i, v) {
+                                opt += `<option value="${v.id_member}">${v.nama_member}</option>`
+                            })
+
+                            $('#id_member').html(opt)
+
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+
+            function getBuku() {
+                $.ajax({
+                    url: "get-bukus", // Pastikan path sudah benar
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+
+                        if (response.status === "success") {
+                            let opt = `<option>-Choose-</option>`
+                            $.each(response.data, function(i, v) {
+                                opt += `<option value="${v.id_buku}">${v.judul_buku}</option>`
+                            })
+                            $('#id_buku').html(opt)
+
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+
+            $(document).on('click', '#denda', function() {
+
+
+                var tglSeharusnya = $("#tanggal_pengembalian_seharusnya").val();
+                var tglAktual = $("#tanggal_kembali").val();
+
+                console.log("Tanggal Seharusnya (raw):", tglSeharusnya);
+                console.log("Tanggal Aktual (raw):", tglAktual);
+
+                if (tglSeharusnya && tglAktual) {
+                    var tglSeharusnyaFormatted = formatTanggal(tglSeharusnya);
+                    var tglAktualFormatted = formatTanggal(tglAktual);
+
+                    console.log("Tanggal Seharusnya (formatted):", tglSeharusnyaFormatted);
+                    console.log("Tanggal Aktual (formatted):", tglAktualFormatted);
+
+                    var dateSeharusnya = new Date(tglSeharusnyaFormatted);
+                    var dateAktual = new Date(tglAktualFormatted);
+
+                    console.log("Date Object Seharusnya:", dateSeharusnya);
+                    console.log("Date Object Aktual:", dateAktual);
+
+                    if (dateAktual > dateSeharusnya) {
+                        var selisihHari = Math.ceil((dateAktual - dateSeharusnya) / (1000 * 60 * 60 * 24));
+                        var denda = selisihHari * 1000;
+                        $("#denda").val(denda);
+                    } else {
+                        $("#denda").val(0);
+                    }
+                }
+
+
+            })
+
+            function formatTanggal(tgl) {
+                var parts = tgl.split("-"); // Pisahkan berdasarkan "-"
+                return parts[2] + "-" + parts[1] + "-" + parts[0]; // Susun ulang jadi YYYY-MM-DD
             }
         </script>
 

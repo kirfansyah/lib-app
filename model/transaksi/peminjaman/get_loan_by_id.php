@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . "/../../../config/database.php";
 
-if (!isset($_POST['id_member']) || empty($_POST['id_member'])) {
+if (!isset($_POST['id_peminjaman']) || empty($_POST['id_peminjaman'])) {
     echo json_encode(['status' => 'error', 'message' => 'ID tidak valid atau tidak dikirim']);
     exit();
 }
 
-$id_member = mysqli_real_escape_string($conn, $_POST['id_member']);
+$id_peminjaman = mysqli_real_escape_string($conn, $_POST['id_peminjaman']);
 
-$sql = "SELECT * FROM member_perpus WHERE id_member='$id_member'";
+$sql = "SELECT * FROM vwmstpeminjaman WHERE id_peminjaman='$id_peminjaman'";
 
 $result = $conn->query($sql);
 

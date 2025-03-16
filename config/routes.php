@@ -66,6 +66,7 @@ return [
     // Transaksi Member
     '/member-perpus'              => 'views/transaksi/member/index.php',
     '/get-member'                 => 'model/transaksi/member/get_member.php',
+    '/get-members'                 => 'model/transaksi/member/get_members.php',
     '/add-member'                 => 'model/transaksi/member/add_member.php',
     '/delete-member'              => 'model/transaksi/member/delete_member.php',
     '/get-member-by-id'           => 'model/transaksi/member/get_member_by_id.php',

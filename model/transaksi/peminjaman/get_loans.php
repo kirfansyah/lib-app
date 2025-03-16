@@ -15,17 +15,19 @@ while ($row = $result->fetch_assoc()) {
     $status                          = $row['status'] == 'dikembalikan' ? '<span class="badges bg-lightgreen">' . ucfirst($row['status']) . '</span>' : '<span class="badges bg-lightred">' . ucfirst($row['status']) . '</span>';
     $tanggal_pinjam                  = date('d-m-Y', strtotime($row['tanggal_pinjam']));
     $tanggal_pengembalian_seharusnya = date('d-m-Y', strtotime($row['tanggal_pengembalian_seharusnya']));
-    $tanggal_kembali                 = date('d-m-Y', strtotime($row['tanggal_kembali']));
+    $tanggal_kembali                 = $row['tanggal_kembali'] != NULL || $row['tanggal_kembali'] != '' ? date('d-m-Y', strtotime($row['tanggal_kembali'])) : '';
     $denda                           = "Rp " . number_format($row['denda'], 0, ',', '.');
     $create_by                       = $row['createdBy']  . '<br>' . ($row['createdAt'] == $default ? '' : date('d-m-Y H:is', strtotime($row['createdAt'])));
     $update_by                       = $row['updateBy']  . '<br>' . ($row['updateAt'] == $default ? '' : date('d-m-Y H:is', strtotime($row['updateAt'])));
     $actions                         = ' <a class="me-3 edit-data" href="#" id="edit-data" data-id="' . $row['id_peminjaman'] . '" data-bs-toggle="modal" data-bs-target="#create">
                                         <img src="assets/img/icons/edit.svg" alt="img">
                                         </a>
-                                        <a class="confirm-text delete-data" href="#" id="delete-data" data-id="' . $row['id_peminjaman'] . '">
-                                        <img src="assets/img/icons/delete.svg" alt="img">
-                                        </a>
+                                       
                                     ';
+
+    // <a class="confirm-text delete-data" href="#" id="delete-data" data-id="' . $row['id_peminjaman'] . '">
+    // <img src="assets/img/icons/delete.svg" alt="img">
+    // </a>
 
     // Tambahkan ke array data
     $data[] = array(
