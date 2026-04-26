@@ -37,6 +37,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Uid</th>
                                         <th>Nama</th>
                                         <th>Email</th>
                                         <th>No Hp</th>
@@ -75,6 +76,12 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                    <div class="form-group">
+                                        <label>UID</label>
+                                        <input name="uid" id="uid" type="text" class="form-control w-300" required autocomplete="off">
+                                    </div>
+                                </div>
                                 <div class="col-md-6 col-sm-12">
                                     <div class="form-group">
                                         <label>Nama</label>
@@ -114,7 +121,8 @@
                             </div>
 
                             <div class="text-center mt-3">
-                                <a class="btn btn-submit me-2">Submit</a>
+                                <!-- <a class="btn btn-submit me-2">Submit</a> -->
+                                <button type="button" class="btn btn-submit me-2">Submit</button>
                                 <a class="btn btn-cancel" data-bs-dismiss="modal">Cancel</a>
                             </div>
                         </div>
@@ -129,6 +137,7 @@
         <!-- Javascript -->
 
         <script>
+            let autoMode = false;
             $(document).ready(function() {
 
 
@@ -158,53 +167,97 @@
 
             });
 
+            function emptyField() {
+                $('#id_member').val('')
+                // $('#uid').val('')
+                $('#nama_member').val('')
+                $('#email').val('')
+                $('#no_hp').val('')
+                $('#alamat').val('')
+                $('#is_active').val('').trigger('change')
+            }
 
 
 
-            $(document).on('click', '.btn-submit', function() {
+
+            // $(document).on('click', '.btn-submit', function() {
+
+            //     var isValid = true;
+
+            //     // Loop setiap input di dalam form
+            //     $('#user-data input, #user-data select').each(function() {
+            //         if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_member') {
+            //             isValid = false;
+            //             $(this).addClass('is-invalid'); // Tambahkan efek merah jika kosong
+            //         } else {
+            //             $(this).removeClass('is-invalid'); // Hapus efek merah jika diisi
+            //         }
+            //     });
+
+            //     if (!isValid) {
+            //         toastr.error('Harap isi semua field!', 'Error', {
+            //             closeButton: true,
+            //             progressBar: true,
+            //             positionClass: 'toast-top-right',
+            //             timeOut: 3000
+            //         });
+            //         return; // Hentikan proses jika ada field kosong
+            //     }
+
+            //     var action = $(this).attr('action')
+            //     // console.log(action);
+
+            //     var formData = $('#user-data').serialize()
+            //     var id = $('#id_member').val()
+            //     if (action == 'add') {
+            //         addData(formData)
+            //     }
+
+            //     if (action == 'update') {
+            //         updateData(formData)
+            //     }
+
+
+
+            // })
+
+            $(document).off('click', '.btn-submit').on('click', '.btn-submit', function() {
+
+                if (autoMode) {
+                    console.log("Auto mode RFID aktif");
+                }
 
                 var isValid = true;
 
-                // Loop setiap input di dalam form
                 $('#user-data input, #user-data select').each(function() {
-                    if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_member') {
+                    if (($(this).val().trim() === '' || $(this).val() === '-Choose-') &&
+                        $(this).attr('name') != 'id_member') {
                         isValid = false;
-                        $(this).addClass('is-invalid'); // Tambahkan efek merah jika kosong
+                        $(this).addClass('is-invalid');
                     } else {
-                        $(this).removeClass('is-invalid'); // Hapus efek merah jika diisi
+                        $(this).removeClass('is-invalid');
                     }
                 });
 
                 if (!isValid) {
-                    toastr.error('Harap isi semua field!', 'Error', {
-                        closeButton: true,
-                        progressBar: true,
-                        positionClass: 'toast-top-right',
-                        timeOut: 3000
-                    });
-                    return; // Hentikan proses jika ada field kosong
+                    toastr.error('Harap isi semua field!', 'Error');
+                    return;
                 }
 
-                var action = $(this).attr('action')
-                // console.log(action);
-
-                var formData = $('#user-data').serialize()
-                var id = $('#id_member').val()
-                if (action == 'add') {
-                    addData(formData)
-                }
-
-                if (action == 'update') {
-                    updateData(formData)
-                }
+                var action = $(this).attr('action');
+                var formData = $('#user-data').serialize();
+                console.log('formdata: ', formData);
+                console.log('ACTION: ', action);
 
 
-
-            })
+                if (action == 'add') addData(formData);
+                if (action == 'update') updateData(formData);
+            });
 
 
             $(document).on('click', '#add', function(e) {
                 e.preventDefault()
+                autoMode = false;
                 $('#user-data').trigger("reset");
                 $('.modal-title').text('Create')
                 $('.btn-submit').attr('action', 'add')
@@ -233,6 +286,7 @@
 
 
                         $('#id_member').val('')
+                        $('#uid').val('')
                         $('#nama_member').val('')
                         $('#email').val('')
                         $('#no_hp').val('')
@@ -242,6 +296,7 @@
                         if (response.status === "success") {
 
                             $('#id_member').val(response.data.id_member)
+                            $('#uid').val(response.data.uid)
                             $('#nama_member').val(response.data.nama_member)
                             $('#email').val(response.data.email)
                             $('#no_hp').val(parseInt(response.data.no_hp))
@@ -324,6 +379,8 @@
                     data: formData,
                     dataType: "json",
                     success: function(response) {
+                        console.log('ini:', response);
+
                         if (response.status === "success") {
                             $('#create').modal('hide'); // Tutup modal
                             $('#userTable').DataTable().ajax.reload(null, false); // Reload tanpa reset paging
@@ -335,7 +392,12 @@
                             });
 
                         } else {
-                            alert(response.message);
+                            // alert(response.message);
+                            Swal.fire({
+                                title: "Error!",
+                                text: response.message,
+                                icon: "error"
+                            });
                         }
                     },
                     error: function(xhr, status, error) {
@@ -372,6 +434,113 @@
                 });
 
             }
+
+            // setInterval(function() {
+            //     $.ajax({
+            //         url: "/lib-app/rfid-get",
+            //         type: "GET",
+            //         dataType: "json",
+            //         success: function(data) {
+            //             if (data) {
+            //                 $("#uid").val(data.uid);
+            //             }
+            //         },
+            //         error: function(xhr, status, error) {
+            //             console.log("Error:", error);
+            //         }
+            //     });
+            // }, 1000);
+
+            // function getRFID() {
+            //     $('#create').modal('show');
+            //     $.ajax({
+            //         url: "/lib-app/rfid-get",
+            //         type: "GET",
+            //         dataType: "json",
+            //         success: function(data) {
+            //             if (data) {
+            //                 $("#uid").val(data.uid);
+            //             }
+            //         },
+            //         complete: function() {
+            //             setTimeout(getRFID, 1000); // delay 1 detik
+            //         }
+            //     });
+            // }
+
+            // // start
+            // getRFID();
+
+            // let lastID = null;
+            // const modalCreate = new bootstrap.Modal(document.getElementById('create'));
+
+            // function getRFID() {
+            //     $.ajax({
+            //         url: "/lib-app/rfid-get",
+            //         type: "GET",
+            //         dataType: "json",
+            //         success: function(data) {
+
+            //             if (data && data.id !== lastID) {
+
+            //                 emptyField()
+            //                 $("#uid").val(data.uid);
+            //                 modalCreate.show();
+
+            //                 lastID = data.id;
+            //             }
+            //         },
+            //         complete: function() {
+            //             setTimeout(getRFID, 1000);
+            //         }
+            //     });
+            // }
+
+            // getRFID()
+
+            let lastID = null;
+            const modalCreate = new bootstrap.Modal(document.getElementById('create'));
+
+            function emptyField() {
+                $('#id_member').val('');
+                $('#nama_member').val('');
+                $('#email').val('');
+                $('#no_hp').val('');
+                $('#alamat').val('');
+                $('#is_active').val('');
+            }
+
+            function getRFID() {
+                $.ajax({
+                    url: "/lib-app/rfid-get",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+
+                        if (data && data.id !== lastID) {
+                            autoMode = true;
+                            emptyField(); // reset dulu
+
+                            $("#uid").val(data.uid); // isi UID
+
+                            $('.modal-title').text('Create')
+                            $('.btn-submit').attr('action', 'add')
+
+                            // modalCreate.show();
+                            setTimeout(() => {
+                                modalCreate.show();
+                            }, 200);
+
+                            lastID = data.id;
+                        }
+                    },
+                    complete: function() {
+                        setTimeout(getRFID, 1000);
+                    }
+                });
+            }
+
+            getRFID();
         </script>
 
         <!-- End Of Javascript -->

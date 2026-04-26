@@ -78,6 +78,12 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                    <div class="form-group">
+                                        <label>UID</label>
+                                        <input name="uid" id="uid" type="text" class="form-control w-300" required autocomplete="off" readonly>
+                                    </div>
+                                </div>
                                 <div class="col-md-6 col-sm-12">
                                     <div class="form-group">
                                         <label>Judul</label>
@@ -357,7 +363,12 @@
                             });
 
                         } else {
-                            alert(response.message);
+                            // alert(response.message);
+                            Swal.fire({
+                                title: "Error!",
+                                text: response.message,
+                                icon: "error"
+                            });
                         }
                     },
                     error: function(xhr, status, error) {
@@ -422,6 +433,60 @@
                     }
                 });
             }
+
+            let firstLoad = true;
+            let lastID = null;
+            const modalCreate = new bootstrap.Modal(document.getElementById('create'));
+
+            function emptyField() {
+                $('#id_buku').val('')
+                $('#judul_buku').val('')
+                $('#penulis').val('')
+                $('#penerbit').val('')
+                $('#tahun_terbit').val('')
+                $('#id_kategori').val('')
+                $('#stok').val('')
+                $('#is_active').val('').trigger('change')
+            }
+
+            function getRFID() {
+                $.ajax({
+                    url: "/lib-app/rfid-get-master-buku",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        console.log('data: ', data);
+
+                        // 🔥 skip hasil pertama saat load halaman
+                        if (firstLoad) {
+                            firstLoad = false;
+                            return;
+                        }
+
+                        if (data && data.uid !== lastID) {
+                            autoMode = true;
+                            emptyField(); // reset dulu
+
+                            $("#uid").val(data.uid); // isi UID
+
+                            $('.modal-title').text('Create')
+                            $('.btn-submit').attr('action', 'add')
+
+                            // modalCreate.show();
+                            modalCreate.show();
+                            // setTimeout(() => {
+                            // }, 200);
+
+                            lastID = data.id;
+                        }
+                    },
+                    complete: function() {
+                        setTimeout(getRFID, 1000);
+                    }
+                });
+            }
+
+            getRFID();
         </script>
 
         <!-- End Of Javascript -->

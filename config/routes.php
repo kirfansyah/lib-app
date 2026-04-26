@@ -66,10 +66,11 @@ return [
     // Transaksi Member
     '/member-perpus'              => 'views/transaksi/member/index.php',
     '/get-member'                 => 'model/transaksi/member/get_member.php',
-    '/get-members'                 => 'model/transaksi/member/get_members.php',
+    '/get-members'                => 'model/transaksi/member/get_members.php',
     '/add-member'                 => 'model/transaksi/member/add_member.php',
     '/delete-member'              => 'model/transaksi/member/delete_member.php',
     '/get-member-by-id'           => 'model/transaksi/member/get_member_by_id.php',
+    '/get-member-by-uid'          => 'model/transaksi/member/get_member_by_uid.php',
     '/update-member'              => 'model/transaksi/member/update_member.php',
     '/get-kategori-member'        => 'model/transaksi/member/get_kategori_member.php',
 
@@ -88,5 +89,12 @@ return [
     '/login'                      => 'views/auth/login.php',
     '/verify-login'               => 'model/auth/verify_login.php',
     '/logout'                     => 'model/auth/logout.php',
+
+    // RFID
+    '/rfid-scan' => 'model/rfid/scan.php',
+    '/rfid-get'  => 'model/rfid/get_scan.php',
+    '/rfid-get-member' => 'model/rfid/get_member_scan.php',
+    '/rfid-get-buku' => 'model/rfid/get_buku_scan.php',
+    '/rfid-get-master-buku' => 'model/rfid/get_buku.php',
 
 ];

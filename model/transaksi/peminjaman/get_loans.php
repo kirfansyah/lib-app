@@ -8,10 +8,28 @@ $result = $conn->query($sql);
 $data = array();
 $no = 1;
 while ($row = $result->fetch_assoc()) {
+
+    // 🔥 ambil judul buku dari id_bukus
+    $judul_buku = [];
+
+    if (!empty($row['id_bukus'])) {
+
+        $ids = explode(',', $row['id_bukus']);
+        $ids_clean = array_map('intval', $ids);
+        $ids_string = implode(',', $ids_clean);
+
+        $qBuku = mysqli_query($conn, "SELECT judul_buku FROM master_buku WHERE id_buku IN ($ids_string)");
+
+        while ($b = mysqli_fetch_assoc($qBuku)) {
+            $judul_buku[] = $b['judul_buku'];
+        }
+    }
+
+    $judul_buku_text = implode(', ', $judul_buku);
     // Pisahkan setiap kolom ke dalam variabel agar lebih fleksibel
     $nomor                           = $no++;
     $nama_member                     = $row['nama_member'];
-    $judul_buku                      = $row['judul_buku'];
+    $judul_buku                      = $judul_buku_text;
     $status                          = $row['status'] == 'dikembalikan' ? '<span class="badges bg-lightgreen">' . ucfirst($row['status']) . '</span>' : '<span class="badges bg-lightred">' . ucfirst($row['status']) . '</span>';
     $tanggal_pinjam                  = date('d-m-Y', strtotime($row['tanggal_pinjam']));
     $tanggal_pengembalian_seharusnya = date('d-m-Y', strtotime($row['tanggal_pengembalian_seharusnya']));

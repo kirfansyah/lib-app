@@ -84,7 +84,7 @@
         }
     });
     var idleTime = 0; // Hitung waktu idle dalam menit
-    var maxIdleTime = 5; // Logout setelah 5 menit
+    var maxIdleTime = 60; // Logout setelah 5 menit
 
     // Reset waktu idle saat user beraktivitas
     $(document).on("mousemove keypress click scroll", function() {

@@ -12,15 +12,7 @@ $is_active   = $_POST['is_active'];
 $createdBy   = $_SESSION['username'] ?? 'SYSTEM';
 
 // 🔍 CEK UID
-$cek = $conn->query("SELECT id_member FROM member_perpus WHERE uid = '$uid'");
-
-if (!$cek) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Query error: ' . $conn->error
-    ]);
-    exit;
-}
+$cek = $conn->query("SELECT id FROM member_perpus WHERE uid = '$uid'");
 
 if ($cek->num_rows > 0) {
     echo json_encode([
@@ -29,6 +21,7 @@ if ($cek->num_rows > 0) {
     ]);
     exit;
 }
+
 // ✅ INSERT
 $sql = "INSERT INTO member_perpus (nama_member,email,no_hp,alamat, uid, is_active, createdBy) 
         VALUES ('$nama_member','$email','$no_hp','$alamat', '$uid','$is_active', '$createdBy')";

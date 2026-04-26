@@ -89,7 +89,7 @@
                                 <div class="col-md-6 col-sm-12">
                                     <div class="form-group">
                                         <label>Judul Buku</label>
-                                        <select name="id_buku" id="id_buku" class="form-control w-300 select2" required>
+                                        <select name="id_buku[]" id="id_buku" class="form-control w-300 select2" required multiple>
                                             <option>-Choose-</option>
                                         </select>
                                     </div>
@@ -190,18 +190,106 @@
 
 
 
+            // $(document).on('click', '.btn-submit', function() {
+
+            //     var isValid = true;
+
+            //     // Loop setiap input di dalam form
+            //     $('#user-data input, #user-data select').each(function() {
+            //         if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_peminjaman' && $(this).attr('name') != 'tanggal_kembali' && $(this).attr('name') != 'denda') {
+            //             isValid = false;
+            //             $(this).addClass('is-invalid'); // Tambahkan efek merah jika kosong
+            //         } else {
+            //             $(this).removeClass('is-invalid'); // Hapus efek merah jika diisi
+            //         }
+            //     });
+
+            //     if (!isValid) {
+            //         toastr.error('Harap isi semua field!', 'Error', {
+            //             closeButton: true,
+            //             progressBar: true,
+            //             positionClass: 'toast-top-right',
+            //             timeOut: 3000
+            //         });
+            //         return; // Hentikan proses jika ada field kosong
+            //     }
+
+            //     var action = $(this).attr('action')
+            //     // console.log(action);
+
+            //     var formData = $('#user-data').serialize()
+            //     var id = $('#id_member').val()
+            //     if (action == 'add') {
+            //         Swal.fire({
+            //             title: "Simpan Transaksi Ini ?",
+            //             text: "Setelah ini, kamu ga bisa edit transaksi!",
+            //             icon: "warning",
+            //             showCancelButton: true,
+            //             confirmButtonColor: "#3085d6",
+            //             cancelButtonColor: "#d33",
+            //             confirmButtonText: "Simpan!"
+            //         }).then((result) => {
+            //             if (result.isConfirmed) {
+            //                 addData(formData)
+            //             }
+            //         });
+            //     }
+
+            //     if (action == 'update') {
+            //         Swal.fire({
+            //             title: "Update Transaksi Ini ?",
+            //             text: "Setelah ini, kamu ga bisa edit transaksi!",
+            //             icon: "warning",
+            //             showCancelButton: true,
+            //             confirmButtonColor: "#3085d6",
+            //             cancelButtonColor: "#d33",
+            //             confirmButtonText: "Ya, Update!"
+            //         }).then((result) => {
+            //             if (result.isConfirmed) {
+            //                 updateData(formData)
+            //             }
+            //         });
+            //     }
+
+
+
+            // })
+
             $(document).on('click', '.btn-submit', function() {
 
                 var isValid = true;
 
-                // Loop setiap input di dalam form
                 $('#user-data input, #user-data select').each(function() {
-                    if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_peminjaman' && $(this).attr('name') != 'tanggal_kembali' && $(this).attr('name') != 'denda') {
-                        isValid = false;
-                        $(this).addClass('is-invalid'); // Tambahkan efek merah jika kosong
-                    } else {
-                        $(this).removeClass('is-invalid'); // Hapus efek merah jika diisi
+
+                    var name = $(this).attr('name');
+                    var value = $(this).val();
+
+                    // field yang diabaikan validasi
+                    var skipFields = ['id_peminjaman', 'tanggal_kembali', 'denda'];
+
+                    if (skipFields.includes(name)) {
+                        $(this).removeClass('is-invalid');
+                        return; // skip loop ini
                     }
+
+                    // VALIDASI INPUT TEXT / SELECT BIASA / MULTI SELECT
+                    var empty = false;
+
+                    if (Array.isArray(value)) {
+                        // multiple select
+                        empty = value.length === 0;
+                    } else {
+                        // input text / select biasa
+                        empty = (value === null || value === '' || value === '-Choose-');
+                    }
+
+                    if (empty) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+
                 });
 
                 if (!isValid) {
@@ -211,14 +299,12 @@
                         positionClass: 'toast-top-right',
                         timeOut: 3000
                     });
-                    return; // Hentikan proses jika ada field kosong
+                    return;
                 }
 
-                var action = $(this).attr('action')
-                // console.log(action);
+                var action = $(this).attr('action');
+                var formData = $('#user-data').serialize();
 
-                var formData = $('#user-data').serialize()
-                var id = $('#id_member').val()
                 if (action == 'add') {
                     Swal.fire({
                         title: "Simpan Transaksi Ini ?",
@@ -230,7 +316,7 @@
                         confirmButtonText: "Simpan!"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            addData(formData)
+                            addData(formData);
                         }
                     });
                 }
@@ -246,14 +332,12 @@
                         confirmButtonText: "Ya, Update!"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            updateData(formData)
+                            updateData(formData);
                         }
                     });
                 }
 
-
-
-            })
+            });
 
 
             $(document).on('click', '#add', function(e) {
@@ -271,62 +355,131 @@
                 $('#denda').prop('readonly', true)
             })
 
+            // $(document).on('click', '.edit-data', function(e) {
+            //     e.preventDefault()
+            //     var q = $(this)
+            //     var id = q.closest('tr').find('.edit-data').data('id')
+            //     $('#user-data').trigger("reset");
+            //     $('.modal-title').text('Update')
+            //     $('.btn-submit').attr('action', 'update')
+
+            //     $('#id_member').prop('readonly', true)
+            //     $('#id_buku').prop('readonly', true)
+            //     $('#tanggal_pinjam').prop('readonly', true)
+            //     $('#tanggal_pengembalian_seharusnya').prop('readonly', true)
+            //     $('#tanggal_kembali').prop('readonly', false)
+            //     $('#denda').prop('readonly', true)
+
+
+            //     $.ajax({
+            //         url: "get-loan-by-id", // Pastikan path sudah benar
+            //         type: "POST",
+            //         data: {
+            //             id_peminjaman: id
+            //         },
+            //         dataType: "json",
+            //         success: function(response) {
+            //             console.log('res: ', response);
+
+
+            //             $('#id_member').val('').trigger('change')
+            //             $('#id_peminjaman').val('')
+            //             $('#id_buku').val('').trigger('change')
+            //             $('#tanggal_pinjam').val('')
+            //             $('#tanggal_pengembalian_seharusnya').val('')
+            //             $('#tanggal_kembali').val('')
+            //             $('#denda').val('')
+
+            //             if (response.status === "success") {
+
+            //                 $('#id_member').val(response.data.id_member).trigger('change');
+            //                 $('#id_peminjaman').val(response.data.id_peminjaman)
+            //                 $('#id_buku').val(response.data.id_buku).trigger('change');
+            //                 var tanggal
+            //                 $('#tanggal_pinjam').val(response.data.tanggal_pinjam.split('-').reverse().join('-'))
+            //                 $('#tanggal_pengembalian_seharusnya').val(response.data.tanggal_pengembalian_seharusnya.split('-').reverse().join('-'))
+            //                 // $('#tanggal_kembali').val((response.data.tanggal_kembali.split('-').reverse().join('-')))
+            //                 // $('#denda').val(parseInt(response.data.denda))
+
+            //             } else {
+            //                 alert(response.message);
+            //             }
+            //         },
+            //         error: function(xhr, status, error) {
+            //             console.log(xhr.responseText);
+            //         }
+            //     });
+
+            // })
+
             $(document).on('click', '.edit-data', function(e) {
-                e.preventDefault()
-                var q = $(this)
-                var id = q.closest('tr').find('.edit-data').data('id')
-                $('#user-data').trigger("reset");
-                $('.modal-title').text('Update')
-                $('.btn-submit').attr('action', 'update')
+                e.preventDefault();
 
-                $('#id_member').prop('readonly', true)
-                $('#id_buku').prop('readonly', true)
-                $('#tanggal_pinjam').prop('readonly', true)
-                $('#tanggal_pengembalian_seharusnya').prop('readonly', true)
-                $('#tanggal_kembali').prop('readonly', false)
-                $('#denda').prop('readonly', true)
+                let id = $(this).data('id');
 
+                $('#user-data')[0].reset();
+                $('.modal-title').text('Update');
+                $('.btn-submit').attr('action', 'update');
+
+                $('#id_member').prop('readonly', true);
+                $('#id_buku').prop('readonly', true);
+                $('#tanggal_pinjam').prop('readonly', true);
+                $('#tanggal_pengembalian_seharusnya').prop('readonly', true);
+                $('#tanggal_kembali').prop('readonly', false);
+                $('#denda').prop('readonly', true);
 
                 $.ajax({
-                    url: "get-loan-by-id", // Pastikan path sudah benar
+                    url: "get-loan-by-id",
                     type: "POST",
                     data: {
                         id_peminjaman: id
                     },
                     dataType: "json",
                     success: function(response) {
-                        console.log('res: ', response);
 
+                        console.log('res:', response);
 
-                        $('#id_member').val('').trigger('change')
-                        $('#id_peminjaman').val('')
-                        $('#id_buku').val('').trigger('change')
-                        $('#tanggal_pinjam').val('')
-                        $('#tanggal_pengembalian_seharusnya').val('')
-                        $('#tanggal_kembali').val('')
-                        $('#denda').val('')
-
-                        if (response.status === "success") {
-
-                            $('#id_member').val(response.data.id_member).trigger('change');
-                            $('#id_peminjaman').val(response.data.id_peminjaman)
-                            $('#id_buku').val(response.data.id_buku).trigger('change');
-                            var tanggal
-                            $('#tanggal_pinjam').val(response.data.tanggal_pinjam.split('-').reverse().join('-'))
-                            $('#tanggal_pengembalian_seharusnya').val(response.data.tanggal_pengembalian_seharusnya.split('-').reverse().join('-'))
-                            // $('#tanggal_kembali').val((response.data.tanggal_kembali.split('-').reverse().join('-')))
-                            // $('#denda').val(parseInt(response.data.denda))
-
-                        } else {
+                        if (response.status !== "success") {
                             alert(response.message);
+                            return;
                         }
+
+                        let data = response.data;
+
+                        // reset dulu
+                        $('#id_member').val(null).trigger('change');
+                        $('#id_buku').val(null).trigger('change');
+                        $('#id_peminjaman').val('');
+                        $('#tanggal_pinjam').val('');
+                        $('#tanggal_pengembalian_seharusnya').val('');
+                        $('#tanggal_kembali').val('');
+                        $('#denda').val('');
+
+                        // isi data
+                        $('#id_member').val(data.id_member).trigger('change');
+                        $('#id_peminjaman').val(data.id_peminjaman);
+
+                        // 🔥 FIX UTAMA (handle multiple buku)
+                        let bukuArray = [];
+
+                        if (Array.isArray(data.id_bukus)) {
+                            bukuArray = data.id_bukus;
+                        } else if (typeof data.id_bukus === 'string') {
+                            bukuArray = data.id_bukus.split(',');
+                        } else {
+                            bukuArray = [data.id_bukus];
+                        }
+
+                        $('#id_buku').val(bukuArray).trigger('change');
+
+                        $('#tanggal_pinjam').val(response.data.tanggal_pinjam.split('-').reverse().join('-'))
+                        $('#tanggal_pengembalian_seharusnya').val(response.data.tanggal_pengembalian_seharusnya.split('-').reverse().join('-'))
                     },
-                    error: function(xhr, status, error) {
+                    error: function(xhr) {
                         console.log(xhr.responseText);
                     }
                 });
-
-            })
+            });
 
             $(document).on('click', '.delete-data', function(e) {
                 e.preventDefault()
@@ -532,6 +685,88 @@
                 var parts = tgl.split("-"); // Pisahkan berdasarkan "-"
                 return parts[2] + "-" + parts[1] + "-" + parts[0]; // Susun ulang jadi YYYY-MM-DD
             }
+
+            $('#id_buku').select2({
+                placeholder: "Scan / Pilih Buku",
+                allowClear: true
+            });
+
+            let lastMember = null;
+            const modalCreate = new bootstrap.Modal(document.getElementById('create'));
+
+            function scanMember() {
+                $.ajax({
+                    url: "/lib-app/rfid-get-member",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(res) {
+
+                        if (res.status === "success" && res.data.id_member !== lastMember) {
+
+                            // reset form
+                            $('#user-data')[0].reset();
+                            $('#id_buku').val(null).trigger('change');
+
+
+                            $('#id_member').prop('readonly', false)
+                            $('#id_buku').prop('readonly', false)
+                            $('#tanggal_pinjam').prop('readonly', false)
+                            $('#tanggal_pinjam').prop('readonly', false)
+                            $('#tanggal_pengembalian_seharusnya').prop('readonly', false)
+                            $('#tanggal_kembali').prop('readonly', true)
+                            $('#denda').prop('readonly', true)
+
+                            $('#user-data').trigger("reset");
+                            $('.modal-title').text('Create')
+                            $('.btn-submit').attr('action', 'add')
+
+                            // isi member
+                            $('#id_member').val(res.data.id_member).trigger('change');
+
+                            modalCreate.show();
+
+                            lastMember = res.id_member;
+                        }
+                    },
+                    complete: function() {
+                        setTimeout(scanMember, 1000);
+                    }
+                });
+            }
+
+            scanMember();
+
+            let lastBuku = null;
+
+            function scanBuku() {
+                $.ajax({
+                    url: "/lib-app/rfid-get-buku",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(res) {
+                        console.log('res: ', res);
+
+
+                        if (res.status === 'success' && res.data.id_buku !== lastBuku) {
+
+                            let current = $('#id_buku').val() || [];
+
+                            // biar ga duplicate
+                            if (!current.includes(res.data.id_buku.toString())) {
+                                current.push(res.data.id_buku.toString());
+                                $('#id_buku').val(current).trigger('change');
+                            }
+
+                            lastBuku = res.id_buku;
+                        }
+                    },
+                    complete: function() {
+                        setTimeout(scanBuku, 1000);
+                    }
+                });
+            }
+
+            scanBuku();
         </script>
 
         <!-- End Of Javascript -->

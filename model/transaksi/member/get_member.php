@@ -10,6 +10,7 @@ $no = 1;
 while ($row = $result->fetch_assoc()) {
     // Pisahkan setiap kolom ke dalam variabel agar lebih fleksibel
     $nomor       = $no++;
+    $uid         = $row['uid'];
     $nama_member = $row['nama_member'];
     $email       = $row['email'];
     $no_hp       = $row['no_hp'];
@@ -28,6 +29,7 @@ while ($row = $result->fetch_assoc()) {
     // Tambahkan ke array data
     $data[] = array(
         $nomor,
+        $uid,
         $nama_member,
         $email,
         $no_hp,
