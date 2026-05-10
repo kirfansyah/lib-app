@@ -36,7 +36,7 @@ if (!$uid) {
 $type = 'member';
 
 // cek huruf depan
-if (strpos($uid, 'E2') === 0) {
+if (strpos($uid, 'e2') === 0) {
     $type = 'buku';
 }
 
