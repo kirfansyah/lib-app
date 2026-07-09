@@ -267,6 +267,7 @@
 
                         if (response.status === "success") {
 
+                            $('#uid').val(response.data.uid)
                             $('#id_buku').val(response.data.id_buku)
                             $('#judul_buku').val(response.data.judul_buku)
                             $('#penulis').val(response.data.penulis)

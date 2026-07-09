@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . "/../../../config/database.php";
 
 $default = '0000-00-00 00:00:00';
@@ -11,31 +10,26 @@ $no   = 1;
 
 while ($row = $result->fetch_assoc()) {
 
-    // Parse detail_buku dari view (format: id_detail|id_buku|judul|status|tgl_kembali|denda)
+    // Parse detail_buku → tampil list per buku + statusnya
     $judul_list = '';
+    $detail_buku = [];
 
     if (!empty($row['detail_buku'])) {
         $bukus = explode(';;', $row['detail_buku']);
         foreach ($bukus as $b) {
             $parts  = explode('|', $b);
-            $judul  = htmlspecialchars($parts[2] ?? '-');
+            $judul  = $parts[2] ?? '-';
             $status = $parts[3] ?? 'dipinjam';
             $badge  = $status == 'dikembalikan'
-                ? '<span class="badges bg-lightgreen rounded-pill px-2 py-1"
-                        style="font-size:11px; display:inline-block;">
-                        Dikembalikan
-                    </span>'
-                : '<span class="badges bg-lightred rounded-pill px-2 py-1"
-                        style="font-size:11px; display:inline-block;">
-                        Dipinjam
-                    </span>';
-            $judul_list .= '<div class="mb-1">' . $judul . ' ' . $badge . '</div>';
+                ? '<span class="badges bg-lightgreen">Dikembalikan</span>'
+                : '<span class="badges bg-lightred">Dipinjam</span>';
+            $judul_list .= '<div>' . htmlspecialchars($judul) . ' ' . $badge . '</div>';
         }
     }
 
     $status_header = $row['status'] == 'dikembalikan'
-        ? '<span class="badges bg-lightgreen">' . ucfirst($row['status']) . '</span>'
-        : '<span class="badges bg-lightred">' . ucfirst($row['status']) . '</span>';
+        ? '<span class="badges bg-lightgreen">Dikembalikan</span>'
+        : '<span class="badges bg-lightred">Dipinjam</span>';
 
     $tanggal_pinjam                  = date('d-m-Y', strtotime($row['tanggal_pinjam']));
     $tanggal_pengembalian_seharusnya = date('d-m-Y', strtotime($row['tanggal_pengembalian_seharusnya']));
@@ -43,7 +37,6 @@ while ($row = $result->fetch_assoc()) {
     $create_by                       = $row['createdBy'] . '<br>' . ($row['createdAt'] == $default ? '' : date('d-m-Y H:i:s', strtotime($row['createdAt'])));
     $update_by                       = $row['updateBy']  . '<br>' . ($row['updateAt'] == $default ? '' : date('d-m-Y H:i:s', strtotime($row['updateAt'])));
 
-    // Tombol edit hanya muncul kalau status masih dipinjam
     $actions = $row['status'] != 'dikembalikan'
         ? '<a class="me-3 edit-data" href="#" data-id="' . $row['id_peminjaman'] . '" data-bs-toggle="modal" data-bs-target="#modalKembali">
                <img src="assets/img/icons/edit.svg" alt="img">

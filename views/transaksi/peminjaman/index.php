@@ -42,7 +42,6 @@
                                         <th>Status</th>
                                         <th>Tanggal Pinjam</th>
                                         <th>Tanggal Pengembalian Seharusnya</th>
-                                        <th>Tanggal Dikembalikan Actual</th>
                                         <th>Denda</th>
                                         <th>Create By</th>
                                         <th>Update By</th>
@@ -118,7 +117,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 col-sm-12 hidden-item">
+                                <!-- <div class="col-md-12 col-sm-12 hidden-item">
                                     <div class="form-group">
                                         <label>Tanggal Dikembalikan Actual </label>
                                         <div class="input-groupicon">
@@ -128,14 +127,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
 
-                                <div class="col-md-6 col-sm-12 hidden-item">
+                                <!-- <div class="col-md-6 col-sm-12 hidden-item">
                                     <div class="form-group">
                                         <label>Denda</label>
                                         <input name="denda" id="denda" type="text" class="form-control w-300" required autocomplete="off" readonly>
                                     </div>
-                                </div>
+                                </div> -->
 
                             </div>
 
@@ -150,6 +149,31 @@
         </div>
 
         <!-- End Of Modal Add Data -->
+
+        <!-- Modal Kembalikan Buku -->
+        <div class="modal fade" id="modalKembali" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Kembalikan Buku</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal">
+                            <span>×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="kembali_id_peminjaman">
+                        <p><strong>Nama Member:</strong> <span id="kembali_nama_member"></span></p>
+                        <p><strong>Tanggal Pengembalian Seharusnya:</strong> <span id="kembali_tgl_seharusnya"></span></p>
+                        <p><strong>Pilih Buku yang Dikembalikan:</strong></p>
+                        <div id="list_buku_kembali"></div>
+                        <div class="text-center mt-3">
+                            <a class="btn btn-submit-kembali btn-submit me-2">Kembalikan</a>
+                            <a class="btn btn-cancel" data-bs-dismiss="modal">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <?php require_once __DIR__ . "/../../templates/footbar.php"; ?>
         <!-- Javascript -->
@@ -190,76 +214,11 @@
 
 
 
-            // $(document).on('click', '.btn-submit', function() {
-
-            //     var isValid = true;
-
-            //     // Loop setiap input di dalam form
-            //     $('#user-data input, #user-data select').each(function() {
-            //         if (($(this).val().trim() === '' || $(this).val() === '-Choose-') && $(this).attr('name') != 'id_peminjaman' && $(this).attr('name') != 'tanggal_kembali' && $(this).attr('name') != 'denda') {
-            //             isValid = false;
-            //             $(this).addClass('is-invalid'); // Tambahkan efek merah jika kosong
-            //         } else {
-            //             $(this).removeClass('is-invalid'); // Hapus efek merah jika diisi
-            //         }
-            //     });
-
-            //     if (!isValid) {
-            //         toastr.error('Harap isi semua field!', 'Error', {
-            //             closeButton: true,
-            //             progressBar: true,
-            //             positionClass: 'toast-top-right',
-            //             timeOut: 3000
-            //         });
-            //         return; // Hentikan proses jika ada field kosong
-            //     }
-
-            //     var action = $(this).attr('action')
-            //     // console.log(action);
-
-            //     var formData = $('#user-data').serialize()
-            //     var id = $('#id_member').val()
-            //     if (action == 'add') {
-            //         Swal.fire({
-            //             title: "Simpan Transaksi Ini ?",
-            //             text: "Setelah ini, kamu ga bisa edit transaksi!",
-            //             icon: "warning",
-            //             showCancelButton: true,
-            //             confirmButtonColor: "#3085d6",
-            //             cancelButtonColor: "#d33",
-            //             confirmButtonText: "Simpan!"
-            //         }).then((result) => {
-            //             if (result.isConfirmed) {
-            //                 addData(formData)
-            //             }
-            //         });
-            //     }
-
-            //     if (action == 'update') {
-            //         Swal.fire({
-            //             title: "Update Transaksi Ini ?",
-            //             text: "Setelah ini, kamu ga bisa edit transaksi!",
-            //             icon: "warning",
-            //             showCancelButton: true,
-            //             confirmButtonColor: "#3085d6",
-            //             cancelButtonColor: "#d33",
-            //             confirmButtonText: "Ya, Update!"
-            //         }).then((result) => {
-            //             if (result.isConfirmed) {
-            //                 updateData(formData)
-            //             }
-            //         });
-            //     }
-
-
-
-            // })
 
             $(document).on('click', '.btn-submit', function() {
 
                 var isValid = true;
-
-                $('#user-data input, #user-data select').each(function() {
+                $('#user-data input:not([type="checkbox"]), #user-data select').each(function() {
 
                     var name = $(this).attr('name');
                     var value = $(this).val();
@@ -269,17 +228,14 @@
 
                     if (skipFields.includes(name)) {
                         $(this).removeClass('is-invalid');
-                        return; // skip loop ini
+                        return;
                     }
 
-                    // VALIDASI INPUT TEXT / SELECT BIASA / MULTI SELECT
                     var empty = false;
 
                     if (Array.isArray(value)) {
-                        // multiple select
                         empty = value.length === 0;
                     } else {
-                        // input text / select biasa
                         empty = (value === null || value === '' || value === '-Choose-');
                     }
 
@@ -342,6 +298,7 @@
 
             $(document).on('click', '#add', function(e) {
                 e.preventDefault()
+                $('#id_member').val(null).trigger('change')
                 $('#user-data').trigger("reset");
                 $('.modal-title').text('Create')
                 $('.btn-submit').attr('action', 'add')
@@ -349,68 +306,12 @@
                 $('#id_member').prop('readonly', false)
                 $('#id_buku').prop('readonly', false)
                 $('#tanggal_pinjam').prop('readonly', false)
-                $('#tanggal_pinjam').prop('readonly', false)
                 $('#tanggal_pengembalian_seharusnya').prop('readonly', false)
                 $('#tanggal_kembali').prop('readonly', true)
                 $('#denda').prop('readonly', true)
             })
 
-            // $(document).on('click', '.edit-data', function(e) {
-            //     e.preventDefault()
-            //     var q = $(this)
-            //     var id = q.closest('tr').find('.edit-data').data('id')
-            //     $('#user-data').trigger("reset");
-            //     $('.modal-title').text('Update')
-            //     $('.btn-submit').attr('action', 'update')
 
-            //     $('#id_member').prop('readonly', true)
-            //     $('#id_buku').prop('readonly', true)
-            //     $('#tanggal_pinjam').prop('readonly', true)
-            //     $('#tanggal_pengembalian_seharusnya').prop('readonly', true)
-            //     $('#tanggal_kembali').prop('readonly', false)
-            //     $('#denda').prop('readonly', true)
-
-
-            //     $.ajax({
-            //         url: "get-loan-by-id", // Pastikan path sudah benar
-            //         type: "POST",
-            //         data: {
-            //             id_peminjaman: id
-            //         },
-            //         dataType: "json",
-            //         success: function(response) {
-            //             console.log('res: ', response);
-
-
-            //             $('#id_member').val('').trigger('change')
-            //             $('#id_peminjaman').val('')
-            //             $('#id_buku').val('').trigger('change')
-            //             $('#tanggal_pinjam').val('')
-            //             $('#tanggal_pengembalian_seharusnya').val('')
-            //             $('#tanggal_kembali').val('')
-            //             $('#denda').val('')
-
-            //             if (response.status === "success") {
-
-            //                 $('#id_member').val(response.data.id_member).trigger('change');
-            //                 $('#id_peminjaman').val(response.data.id_peminjaman)
-            //                 $('#id_buku').val(response.data.id_buku).trigger('change');
-            //                 var tanggal
-            //                 $('#tanggal_pinjam').val(response.data.tanggal_pinjam.split('-').reverse().join('-'))
-            //                 $('#tanggal_pengembalian_seharusnya').val(response.data.tanggal_pengembalian_seharusnya.split('-').reverse().join('-'))
-            //                 // $('#tanggal_kembali').val((response.data.tanggal_kembali.split('-').reverse().join('-')))
-            //                 // $('#denda').val(parseInt(response.data.denda))
-
-            //             } else {
-            //                 alert(response.message);
-            //             }
-            //         },
-            //         error: function(xhr, status, error) {
-            //             console.log(xhr.responseText);
-            //         }
-            //     });
-
-            // })
 
             $(document).on('click', '.edit-data', function(e) {
                 e.preventDefault();
@@ -711,7 +612,15 @@
                             $('#id_member').prop('readonly', false)
                             $('#id_buku').prop('readonly', false)
                             $('#tanggal_pinjam').prop('readonly', false)
-                            $('#tanggal_pinjam').prop('readonly', false)
+
+                            // Isi dengan tanggal hari ini
+                            const today = new Date();
+                            const yyyy = today.getFullYear();
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            const dd = String(today.getDate()).padStart(2, '0');
+
+                            $('#tanggal_pinjam').val(`${dd}-${mm}-${yyyy}`);
+
                             $('#tanggal_pengembalian_seharusnya').prop('readonly', false)
                             $('#tanggal_kembali').prop('readonly', true)
                             $('#denda').prop('readonly', true)
@@ -767,6 +676,116 @@
             }
 
             scanBuku();
+
+            // Buka modal kembalikan
+            $(document).on('click', '.edit-data', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                $('#kembali_id_peminjaman').val(id);
+
+                $.ajax({
+                    url: "get-loan-by-id",
+                    type: "POST",
+                    data: {
+                        id_peminjaman: id
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.status !== "success") {
+                            alert(response.message);
+                            return;
+                        }
+
+                        let data = response.data;
+                        $('#kembali_nama_member').text(data.nama_member);
+                        let tglSeharusnya = '';
+                        if (data.tanggal_pengembalian_seharusnya) {
+                            let parts = data.tanggal_pengembalian_seharusnya.split('-');
+                            tglSeharusnya = parts[2] + '-' + parts[1] + '-' + parts[0];
+                        }
+
+                        $('#kembali_tgl_seharusnya').text(tglSeharusnya);
+
+                        // Render list buku dengan checkbox (hanya yang masih dipinjam)
+                        let html = '';
+                        data.detail_buku.forEach(function(b) {
+
+                            let tglKembali = '';
+                            if (b.tanggal_kembali) {
+                                let parts = b.tanggal_kembali.split('-');
+                                tglKembali = parts[2] + '-' + parts[1] + '-' + parts[0];
+                            }
+                            if (b.status === 'dipinjam') {
+                                html += `
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="id_detail[]" value="${b.id_detail}" id="buku_${b.id_detail}">
+                                    <label class="form-check-label" for="buku_${b.id_detail}">
+                                        ${b.judul_buku}
+                                    </label>
+                                </div>`;
+                            } else {
+                                html += `
+                                <div class="mb-2 text-muted">
+                                    <input type="checkbox" disabled checked class="form-check-input">
+                                    <label class="form-check-label ms-1">
+                                        ${b.judul_buku} 
+                                        <span class="badges bg-lightgreen">Dikembalikan</span>
+                                        ${tglKembali ? '<small class="text-muted ms-1">(' + tglKembali + ')</small>' : ''}
+                                        ${b.denda > 0 ? '<small class="text-danger ms-1">Denda: Rp ' + parseInt(b.denda).toLocaleString('id-ID') + '</small>' : ''}
+                                    </label>
+                                </div>`;
+                            }
+                        });
+
+                        $('#list_buku_kembali').html(html);
+                    }
+                });
+            });
+
+            // Submit kembalikan
+            $(document).on('click', '.btn-submit-kembali', function() {
+                let id_peminjaman = $('#kembali_id_peminjaman').val();
+                let id_details = [];
+
+                $('input[name="id_detail[]"]:checked').each(function() {
+                    id_details.push($(this).val());
+                });
+
+                if (id_details.length === 0) {
+                    toastr.error('Pilih minimal 1 buku!', 'Error');
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Kembalikan Buku?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, Kembalikan!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "update-loan",
+                            type: "POST",
+                            data: {
+                                id_peminjaman: id_peminjaman,
+                                id_detail: id_details
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                if (response.status === "success") {
+                                    $('#modalKembali').modal('hide');
+                                    $('#userTable').DataTable().ajax.reload(null, false);
+                                    Swal.fire("Berhasil!", response.message, "success");
+                                } else {
+                                    alert(response.message);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
         </script>
 
         <!-- End Of Javascript -->
