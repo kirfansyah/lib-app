@@ -206,7 +206,7 @@ table.dash-table tr:last-child td { border-bottom: none; }
 <?php require_once __DIR__ . "/templates/footbar.php"; ?>
 
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script> -->
- <script src="/assets/js/chart.min.js"></script>
+<script src="/lib-app/assets/js/chart.min.js"></script>
 <script>
 const ctx = document.getElementById('kategoriChart').getContext('2d');
 new Chart(ctx, {
